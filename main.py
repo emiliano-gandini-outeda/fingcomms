@@ -1,6 +1,7 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, List
 import os
@@ -14,6 +15,16 @@ from sqlalchemy.orm import Session
 from database import engine, SessionLocal, Group, ImportantLink, Base, get_db
 
 app = FastAPI(root_path=os.getenv("ROOT_PATH", ""))
+
+logger = logging.getLogger(__name__)
+
+
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    logger.debug("REQUEST: %s %s", request.method, request.url.path)
+    response = await call_next(request)
+    return response
+
 
 Base.metadata.create_all(bind=engine)
 
