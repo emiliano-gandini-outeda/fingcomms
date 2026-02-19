@@ -290,25 +290,22 @@ def delete_important_link(link_id: int, db: Session = Depends(get_db)):
     return {"success": True}
 
 
-@app.get("/")
-def serve_index():
-    return FileResponse("static/index.html")
-
-
-@app.get("/admin")
-def serve_admin():
-    return FileResponse("static/admin.html")
-
-
 @app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 def serve_catch_all(path: str):
     if ".." in path:
         raise HTTPException(status_code=404, detail="Not found")
     if path.startswith("api/"):
         raise HTTPException(status_code=404, detail="Not found")
+    if path.startswith("static/"):
+        return FileResponse(path)
     if path.startswith("admin"):
         return FileResponse("static/admin.html")
     return FileResponse("static/index.html")
 
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+@app.get("/")
+def serve_index_root():
+    return FileResponse("static/index.html")
