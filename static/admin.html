@@ -709,10 +709,6 @@
                     }
                 };
 
-                onMounted(() => {
-                    checkStoredToken();
-                });
-
                 const fetchGroups = async () => {
                     try {
                         const response = await fetch(apiUrl('/api/groups'));
@@ -729,6 +725,19 @@
                         g.name.toLowerCase().includes(query) || 
                         (g.description && g.description.toLowerCase().includes(query))
                     );
+                });
+
+                const checkStoredToken = () => {
+                    const stored = localStorage.getItem('adminToken');
+                    if (stored) {
+                        token.value = stored;
+                        isAdmin.value = true;
+                        fetchGroups();
+                    }
+                };
+
+                onMounted(() => {
+                    checkStoredToken();
                 });
 
                 const togglePin = async (group) => {
