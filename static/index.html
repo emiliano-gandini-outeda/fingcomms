@@ -788,36 +788,30 @@
                         return rows;
                     }
                     
-                    rows.push({ items: items.slice(0, 4), cols: 4 });
-                    let remaining = count - 4;
-                    let index = 4;
+                    const numFours = Math.floor(count / 4);
+                    const remainder = count % 4;
                     
-                    while (remaining > 0) {
-                        if (remaining >= 3) {
-                            rows.push({ items: items.slice(index, index + 3), cols: 3 });
-                            index += 3;
-                            remaining -= 3;
-                        } else if (remaining === 2) {
-                            rows.push({ items: items.slice(index, index + 2), cols: 2 });
-                            index += 2;
-                            remaining -= 2;
-                        } else if (remaining === 1) {
-                            if (rows.length > 0) {
-                                const lastRow = rows[rows.length - 1];
-                                if (lastRow.cols === 4) {
-                                    lastRow.cols = 3;
-                                    lastRow.items = items.slice(0, 3);
-                                    rows.push({ items: items.slice(3, 5), cols: 2 });
-                                } else if (lastRow.cols === 3) {
-                                    lastRow.cols = 2;
-                                    lastRow.items = items.slice(0, 2);
-                                    rows.push({ items: items.slice(2, 4), cols: 2 });
-                                } else {
-                                    rows.push({ items: items.slice(index, index + 1), cols: 1 });
-                                }
-                            }
-                            remaining = 0;
+                    if (remainder === 0) {
+                        for (let i = 0; i < numFours; i++) {
+                            rows.push({ items: items.slice(i * 4, (i + 1) * 4), cols: 4 });
                         }
+                    } else if (remainder === 1) {
+                        const fourRows = numFours - 1;
+                        for (let i = 0; i < fourRows; i++) {
+                            rows.push({ items: items.slice(i * 4, (i + 1) * 4), cols: 4 });
+                        }
+                        rows.push({ items: items.slice(fourRows * 4, fourRows * 4 + 3), cols: 3 });
+                        rows.push({ items: items.slice(fourRows * 4 + 3, fourRows * 4 + 5), cols: 2 });
+                    } else if (remainder === 2) {
+                        for (let i = 0; i < numFours; i++) {
+                            rows.push({ items: items.slice(i * 4, (i + 1) * 4), cols: 4 });
+                        }
+                        rows.push({ items: items.slice(numFours * 4), cols: 2 });
+                    } else if (remainder === 3) {
+                        for (let i = 0; i < numFours; i++) {
+                            rows.push({ items: items.slice(i * 4, (i + 1) * 4), cols: 4 });
+                        }
+                        rows.push({ items: items.slice(numFours * 4), cols: 3 });
                     }
                     
                     return rows;
